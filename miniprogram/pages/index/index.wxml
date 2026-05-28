@@ -1,0 +1,82 @@
+<!-- pages/index/index.wxml -->
+<view class="container">
+
+  <!-- 未开始戒烟 -->
+  <view wx:if="{{!hasActiveRecord}}" class="empty-state">
+    <view class="empty-icon">🚭</view>
+    <view class="empty-title">开始你的戒烟之旅</view>
+    <view class="empty-desc">记录你的戒烟时刻，见证身体每一天的变化</view>
+    <button class="btn-primary" bindtap="onStartQuit">我要戒烟</button>
+  </view>
+
+  <!-- 已开始戒烟 -->
+  <view wx:if="{{hasActiveRecord}}" class="dashboard">
+
+    <!-- 计时器 -->
+    <view class="card timer-card">
+      <view class="encouragement">{{nickName ? nickName + '，' : ''}}{{encouragement}}</view>
+      <view class="timer-display">
+        <view class="timer-item">
+          <text class="big-number">{{days}}</text>
+          <text class="big-number-unit">天</text>
+        </view>
+        <view class="timer-item">
+          <text class="big-number">{{hours % 24}}</text>
+          <text class="big-number-unit">时</text>
+        </view>
+        <view class="timer-item">
+          <text class="big-number">{{minutes % 60}}</text>
+          <text class="big-number-unit">分</text>
+        </view>
+      </view>
+      <view class="timer-label">已坚持戒烟</view>
+    </view>
+
+    <!-- 统计双卡 -->
+    <view class="stats-row">
+      <view class="card stat-card">
+        <view class="card-title">💰 已省钱</view>
+        <view class="stat-value text-primary">¥{{moneySaved}}</view>
+      </view>
+      <view class="card stat-card">
+        <view class="card-title">🚭 少抽了</view>
+        <view class="stat-value text-success">{{cigarettesAvoided}}支</view>
+      </view>
+    </view>
+
+    <!-- 重获生命 -->
+    <view class="card">
+      <view class="card-title">⏳ 重获生命时长</view>
+      <view class="life-value">
+        <text class="big-number" style="font-size:72rpx;">{{lifeRegained}}</text>
+        <text class="big-number-unit">小时</text>
+      </view>
+    </view>
+
+    <!-- 里程碑进度 -->
+    <view class="card">
+      <view class="milestone-header">
+        <text class="card-title">🎯 下一个里程碑</text>
+        <text class="milestone-name">{{nextMilestone}}</text>
+      </view>
+      <view class="progress-bar">
+        <view class="progress-fill" style="width:{{milestoneProgress}}%"></view>
+      </view>
+      <view class="milestone-footer">
+        <text>还有 {{milestoneDaysLeft}} 天</text>
+        <text>{{milestoneProgress}}%</text>
+      </view>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="action-row">
+      <button class="btn-danger emergency-btn" bindtap="onEmergency">
+        🆘 烟瘾来了
+      </button>
+      <button class="btn-primary checkin-btn" bindtap="onCheckIn">
+        ✅ 今日打卡
+      </button>
+    </view>
+
+  </view>
+</view>

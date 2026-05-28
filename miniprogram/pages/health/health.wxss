@@ -1,0 +1,150 @@
+/* pages/health/health.wxss */
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 200rpx;
+}
+
+.empty-icon {
+  font-size: 120rpx;
+  margin-bottom: 40rpx;
+}
+
+.empty-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  margin-bottom: 16rpx;
+}
+
+.empty-desc {
+  font-size: 28rpx;
+  color: #8888aa;
+  text-align: center;
+}
+
+/* 进度卡片 */
+.progress-card {
+  margin-bottom: 30rpx;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.progress-percent {
+  font-size: 36rpx;
+  font-weight: 700;
+}
+
+.progress-stats {
+  font-size: 24rpx;
+  color: #8888aa;
+  margin-top: 12rpx;
+  text-align: center;
+}
+
+/* 时间线 */
+.timeline-list {
+  padding-left: 10rpx;
+}
+
+.timeline-item {
+  display: flex;
+  position: relative;
+  padding-bottom: 32rpx;
+}
+
+.timeline-item:last-child {
+  padding-bottom: 0;
+}
+
+/* 节点 */
+.timeline-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 40rpx;
+  flex-shrink: 0;
+  margin-right: 24rpx;
+}
+
+.node-dot {
+  width: 24rpx;
+  height: 24rpx;
+  border-radius: 50%;
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.dot-achieved {
+  background: #4ecdc4;
+  box-shadow: 0 0 16rpx rgba(78, 205, 196, 0.5);
+}
+
+.dot-pending {
+  background: #3a3a5a;
+  border: 4rpx solid #555577;
+}
+
+.node-line {
+  width: 4rpx;
+  flex-grow: 1;
+  margin-top: 8rpx;
+}
+
+.line-achieved {
+  background: linear-gradient(180deg, #4ecdc4, rgba(78, 205, 196, 0.3));
+}
+
+.line-pending {
+  background: #2a2a4a;
+}
+
+/* 内容 */
+.timeline-content {
+  flex: 1;
+  padding: 12rpx 20rpx 12rpx 0;
+}
+
+.milestone-header {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 8rpx;
+}
+
+.milestone-title {
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.milestone-desc {
+  font-size: 26rpx;
+  color: #aaaacc;
+  margin-bottom: 8rpx;
+}
+
+.milestone-meta {
+  font-size: 22rpx;
+  color: #666688;
+}
+
+.milestone-category {
+  padding: 4rpx 12rpx;
+  background: #2a2a4a;
+  border-radius: 8rpx;
+}
+
+/* 已达成项高亮 */
+.achieved .milestone-title {
+  color: #6bff9e;
+}
+
+.achieved .milestone-desc {
+  color: #ccddcc;
+}

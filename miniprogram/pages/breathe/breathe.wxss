@@ -1,0 +1,137 @@
+/* pages/breathe/breathe.wxss */
+
+.breathe-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 40rpx;
+}
+
+/* 触发场景 */
+.trigger-section {
+  width: 100%;
+  margin-bottom: 40rpx;
+}
+
+.section-title {
+  font-size: 30rpx;
+  color: #e8e8f0;
+  margin-bottom: 20rpx;
+  text-align: center;
+}
+
+.trigger-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16rpx;
+}
+
+.trigger-item {
+  padding: 16rpx 28rpx;
+  border-radius: 40rpx;
+  background: #2a2a4a;
+  color: #8888aa;
+  font-size: 26rpx;
+  transition: all 0.3s;
+}
+
+.trigger-selected {
+  background: rgba(78, 205, 196, 0.2);
+  color: #4ecdc4;
+  border: 2rpx solid #4ecdc4;
+}
+
+/* 呼吸圈 */
+.breath-circle-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 60rpx 0;
+}
+
+.breath-circle {
+  width: 320rpx;
+  height: 320rpx;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(78, 205, 196, 0.3), rgba(78, 205, 196, 0.05));
+  border: 4rpx solid rgba(78, 205, 196, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 4s ease-in-out, opacity 1s ease;
+  box-shadow: 0 0 80rpx rgba(78, 205, 196, 0.2);
+}
+
+.breath-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.countdown-number {
+  font-size: 96rpx;
+  font-weight: 700;
+  color: #4ecdc4;
+  line-height: 1;
+  margin-bottom: 12rpx;
+}
+
+.phase-text {
+  font-size: 28rpx;
+  color: #e8e8f0;
+}
+
+.phase-desc {
+  font-size: 26rpx;
+  color: #8888aa;
+  text-align: center;
+  margin-bottom: 20rpx;
+}
+
+/* 轮次进度 */
+.rounds-progress {
+  font-size: 26rpx;
+  color: #8888aa;
+  margin-bottom: 30rpx;
+}
+
+/* 操作按钮 */
+.action-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.breathe-start-btn {
+  width: 400rpx;
+  margin-top: 20rpx;
+}
+
+/* 方法说明 */
+.method-desc {
+  width: 100%;
+  margin-top: 40rpx;
+}
+
+.method-step {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 16rpx;
+  font-size: 28rpx;
+}
+
+.step-num {
+  font-weight: 700;
+  min-width: 80rpx;
+}
+
+.method-note {
+  font-size: 24rpx;
+  color: #8888aa;
+  margin-top: 16rpx;
+  padding-top: 16rpx;
+  border-top: 2rpx solid #2a2a4a;
+}

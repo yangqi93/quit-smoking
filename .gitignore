@@ -1,0 +1,8 @@
+.env
+*.db
+server/data/
+miniprogram/node_modules/
+miniprogram/miniprogram_npm/
+project.private.config.json
+.DS_Store
+*.log

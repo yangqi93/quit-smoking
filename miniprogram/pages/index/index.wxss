@@ -1,0 +1,117 @@
+/* pages/index/index.wxss */
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 200rpx;
+}
+
+.empty-icon {
+  font-size: 120rpx;
+  margin-bottom: 40rpx;
+}
+
+.empty-title {
+  font-size: 40rpx;
+  font-weight: 600;
+  color: #e8e8f0;
+  margin-bottom: 16rpx;
+}
+
+.empty-desc {
+  font-size: 28rpx;
+  color: #8888aa;
+  margin-bottom: 60rpx;
+  text-align: center;
+}
+
+/* 计时器 */
+.timer-card {
+  text-align: center;
+  padding: 40rpx 30rpx;
+}
+
+.encouragement {
+  font-size: 28rpx;
+  color: #ffd93d;
+  margin-bottom: 30rpx;
+}
+
+.timer-display {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 30rpx;
+}
+
+.timer-item {
+  display: flex;
+  align-items: baseline;
+}
+
+.timer-label {
+  font-size: 26rpx;
+  color: #8888aa;
+  margin-top: 16rpx;
+}
+
+/* 统计双卡 */
+.stats-row {
+  display: flex;
+  gap: 20rpx;
+}
+
+.stat-card {
+  flex: 1;
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 44rpx;
+  font-weight: 700;
+  margin-top: 8rpx;
+}
+
+/* 重获生命 */
+.life-value {
+  display: flex;
+  align-items: baseline;
+  margin-top: 8rpx;
+}
+
+/* 里程碑 */
+.milestone-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.milestone-name {
+  font-size: 28rpx;
+  color: #4ecdc4;
+  font-weight: 600;
+}
+
+.milestone-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 24rpx;
+  color: #8888aa;
+  margin-top: 12rpx;
+}
+
+/* 操作按钮 */
+.action-row {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 10rpx;
+}
+
+.emergency-btn, .checkin-btn {
+  flex: 1;
+  font-size: 28rpx;
+  padding: 20rpx 0;
+}

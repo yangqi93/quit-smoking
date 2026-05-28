@@ -1,0 +1,177 @@
+<!-- pages/profile/profile.wxml -->
+<view class="container">
+
+  <!-- 已戒烟状态 -->
+  <view wx:if="{{hasActiveRecord && !showStartForm}}" class="profile-section">
+
+    <!-- 用户信息卡 -->
+    <view class="card user-info-card">
+      <view class="user-info-row">
+        <!-- 头像：用 button 包裹以支持 chooseAvatar -->
+        <button class="avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+          <image
+            wx:if="{{avatarUrl}}"
+            class="user-avatar"
+            src="{{avatarUrl}}"
+            mode="aspectFill"
+          />
+          <view wx:else class="user-avatar-default">
+            <text class="avatar-default-icon">👤</text>
+          </view>
+        </button>
+        <!-- 昵称和戒烟天数 -->
+        <view class="user-info-text">
+          <input
+            class="nickname-input"
+            type="nickname"
+            value="{{nickName}}"
+            placeholder="点击设置昵称"
+            bindchange="onNicknameInput"
+            placeholder-class="nickname-placeholder"
+          />
+          <text class="user-days-text">已戒烟 {{daysQuit}} 天</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 戒烟信息卡 -->
+    <view class="card">
+      <view class="card-title">🚭 戒烟信息</view>
+      <view class="info-row">
+        <text class="info-label">开始日期</text>
+        <text class="info-value">{{quitDate}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">已坚持</text>
+        <text class="info-value text-primary">{{daysQuit}} 天</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">每天抽</text>
+        <text class="info-value">{{cigarettesPerDay}} 支</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">烟价</text>
+        <text class="info-value">¥{{pricePerPack}} / 包（{{cigarettesPerPack}}支）</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">烟龄</text>
+        <text class="info-value">{{yearsSmoked}} 年</text>
+      </view>
+      <view wx:if="{{reason}}" class="info-row reason-row">
+        <text class="info-label">理由</text>
+        <text class="info-value reason-text">{{reason}}</text>
+      </view>
+    </view>
+
+    <!-- 提醒设置 -->
+    <view class="card">
+      <view class="card-title">⏰ 提醒设置</view>
+      <view class="info-row">
+        <text class="info-label">每日打卡提醒</text>
+        <switch
+          checked="{{reminderEnabled}}"
+          bindchange="onReminderToggle"
+          color="#4ecdc4"
+        />
+      </view>
+      <view wx:if="{{reminderEnabled}}" class="info-row">
+        <text class="info-label">提醒时间</text>
+        <picker mode="time" value="{{reminderTime}}" bindchange="onReminderTimeChange">
+          <text class="info-value text-primary">{{reminderTime}}</text>
+        </picker>
+      </view>
+    </view>
+
+    <!-- 复吸重置 -->
+    <view class="card relapse-card">
+      <view class="card-title">复吸了？</view>
+      <view class="relapse-desc">没关系，大多数人需要多次尝试。每一次尝试都在靠近成功。</view>
+      <button class="btn-ghost" bindtap="onRelapse">重新开始</button>
+    </view>
+
+  </view>
+
+  <!-- 开始戒烟表单 -->
+  <view wx:if="{{showStartForm}}" class="start-form">
+
+    <view class="form-title">开始你的戒烟之旅 ✊</view>
+
+    <view class="card">
+      <view class="form-group">
+        <text class="form-label">戒烟开始日期</text>
+        <picker mode="date" value="{{quitDate}}" bindchange="onDateChange">
+          <view class="form-input picker-input">
+            {{quitDate || '选择日期'}}
+          </view>
+        </picker>
+      </view>
+
+      <view class="form-group">
+        <text class="form-label">每天抽烟数（支）</text>
+        <input
+          class="form-input"
+          type="number"
+          value="{{cigarettesPerDay}}"
+          bindinput="onCigPerDayChange"
+          placeholder="20"
+        />
+      </view>
+
+      <view class="form-group">
+        <text class="form-label">每包价格（元）</text>
+        <input
+          class="form-input"
+          type="digit"
+          value="{{pricePerPack}}"
+          bindinput="onPriceChange"
+          placeholder="20"
+        />
+      </view>
+
+      <view class="form-group">
+        <text class="form-label">每包支数</text>
+        <input
+          class="form-input"
+          type="number"
+          value="{{cigarettesPerPack}}"
+          bindinput="onCigPerPackChange"
+          placeholder="20"
+        />
+      </view>
+
+      <view class="form-group">
+        <text class="form-label">烟龄（年）</text>
+        <input
+          class="form-input"
+          type="digit"
+          value="{{yearsSmoked}}"
+          bindinput="onYearsSmokedChange"
+          placeholder="5"
+        />
+      </view>
+
+      <view class="form-group">
+        <text class="form-label">为什么想戒烟？（选填）</text>
+        <textarea
+          class="form-textarea"
+          value="{{reason}}"
+          bindinput="onReasonInput"
+          placeholder="为了家人、为了健康..."
+          maxlength="200"
+        />
+      </view>
+    </view>
+
+    <button class="btn-primary confirm-btn" bindtap="onConfirmStart">
+      🚭 开始戒烟！
+    </button>
+  </view>
+
+  <!-- 未开始且不显示表单 -->
+  <view wx:if="{{!hasActiveRecord && !showStartForm}}" class="empty-state">
+    <view class="empty-icon">🚭</view>
+    <view class="empty-title">还没开始戒烟</view>
+    <button class="btn-primary" bindtap="onStartQuit">我要戒烟</button>
+  </view>
+
+</view>

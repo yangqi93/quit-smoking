@@ -1,0 +1,36 @@
+{
+  "miniprogramRoot": "miniprogram/",
+  "setting": {
+    "es6": true,
+    "postcss": true,
+    "minified": true,
+    "uglifyFileName": false,
+    "enhance": true,
+    "packNpmRelationList": [],
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    },
+    "useCompilerPlugins": false,
+    "minifyWXML": true,
+    "urlCheck": false
+  },
+  "compileType": "miniprogram",
+  "simulatorPluginLibVersion": {},
+  "packOptions": {
+    "ignore": [
+      { "type": "folder", "value": "server" },
+      { "type": "folder", "value": "miniprogram/node_modules" },
+      { "type": "folder", "value": "miniprogram/__tests__" },
+      { "type": "folder", "value": "miniprogram/scripts" },
+      { "type": "file", "value": ".env" },
+      { "type": "file", "value": ".env.example" },
+      { "type": "file", "value": ".gitignore" },
+      { "type": "file", "value": "README.md" }
+    ],
+    "include": []
+  },
+  "appid": "",
+  "editorSetting": {}
+}

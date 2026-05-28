@@ -1,0 +1,59 @@
+<!-- pages/health/health.wxml -->
+<view class="container">
+
+  <!-- 未开始 -->
+  <view wx:if="{{!isActive}}" class="empty-state">
+    <view class="empty-icon">🫁</view>
+    <view class="empty-title">开始戒烟查看恢复时间线</view>
+    <view class="empty-desc">基于 WHO 数据，看看你的身体如何一步步恢复</view>
+  </view>
+
+  <!-- 时间线 -->
+  <view wx:if="{{isActive}}" class="timeline-page">
+
+    <!-- 进度摘要 -->
+    <view class="card progress-card">
+      <view class="progress-header">
+        <text class="card-title">🫀 健康恢复进度</text>
+        <text class="progress-percent text-primary">{{progressPercent}}%</text>
+      </view>
+      <view class="progress-bar">
+        <view class="progress-fill" style="width:{{progressPercent}}%"></view>
+      </view>
+      <view class="progress-stats">
+        已达成 <text class="text-primary">{{achievedCount}}</text> / {{totalCount}} 个里程碑
+      </view>
+    </view>
+
+    <!-- 时间线列表 -->
+    <view class="timeline-list">
+
+      <view
+        wx:for="{{timeline}}"
+        wx:key="hours"
+        class="timeline-item {{item.achieved ? 'achieved' : 'pending'}}"
+      >
+        <!-- 节点 -->
+        <view class="timeline-node">
+          <view class="node-dot {{item.achieved ? 'dot-achieved' : 'dot-pending'}}"></view>
+          <view wx:if="{{index < timeline.length - 1}}" class="node-line {{item.achieved ? 'line-achieved' : 'line-pending'}}"></view>
+        </view>
+
+        <!-- 内容 -->
+        <view class="timeline-content">
+          <view class="milestone-header">
+            <text class="milestone-title {{item.achieved ? 'text-success' : ''}}">{{item.title}}</text>
+            <text wx:if="{{item.achieved}}" class="tag tag-success">✓ 已达成</text>
+            <text wx:else class="tag tag-warning">{{item.timeLeft}}后</text>
+          </view>
+          <view class="milestone-desc">{{item.desc}}</view>
+          <view class="milestone-meta">
+            <text class="milestone-category">{{item.category === 'immediate' ? '即时' : item.category === 'short' ? '短期' : item.category === 'medium' ? '中期' : '长期'}}</text>
+          </view>
+        </view>
+      </view>
+
+    </view>
+  </view>
+
+</view>

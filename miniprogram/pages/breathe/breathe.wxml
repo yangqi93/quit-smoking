@@ -1,0 +1,85 @@
+<!-- pages/breathe/breathe.wxml -->
+<view class="container breathe-page">
+
+  <!-- 触发场景选择 -->
+  <view wx:if="{{phase === 'ready'}}" class="trigger-section">
+    <view class="section-title">什么触发了你的烟瘾？</view>
+    <view class="trigger-list">
+      <view
+        wx:for="{{triggers}}"
+        wx:key="id"
+        class="trigger-item {{item.selected ? 'trigger-selected' : ''}}"
+        data-id="{{item.id}}"
+        bindtap="onSelectTrigger"
+      >
+        {{item.label}}
+      </view>
+    </view>
+  </view>
+
+  <!-- 呼吸引导圈 -->
+  <view class="breath-circle-container">
+    <view
+      class="breath-circle"
+      style="transform: scale({{circleScale}}); opacity: {{circleOpacity}};"
+    >
+      <view class="breath-inner">
+        <text class="countdown-number" wx:if="{{countdown > 0}}">{{countdown}}</text>
+        <text class="phase-text">{{phaseText}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 阶段描述 -->
+  <view class="phase-desc">{{phaseDesc}}</view>
+
+  <!-- 进度指示 -->
+  <view wx:if="{{isBreathing}}" class="rounds-progress">
+    <text>第 {{completedRounds + 1}} / {{totalRounds}} 轮</text>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-section">
+    <button
+      wx:if="{{phase === 'ready'}}"
+      class="btn-primary breathe-start-btn"
+      bindtap="onStartBreathe"
+    >
+      开始呼吸
+    </button>
+    <button
+      wx:if="{{phase === 'done'}}"
+      class="btn-primary"
+      bindtap="onReset"
+    >
+      再来一次
+    </button>
+    <button
+      wx:if="{{phase === 'done'}}"
+      class="btn-ghost"
+      bindtap="onReset"
+      style="margin-top: 20rpx;"
+    >
+      我已经好了
+    </button>
+  </view>
+
+  <!-- 4-7-8 说明 -->
+  <view wx:if="{{phase === 'ready'}}" class="card method-desc">
+    <view class="card-title">🧘 4-7-8 呼吸法</view>
+    <view class="method-step">
+      <text class="step-num text-primary">4秒</text>
+      <text>用鼻子缓慢深吸气</text>
+    </view>
+    <view class="method-step">
+      <text class="step-num text-warning">7秒</text>
+      <text>屏住呼吸</text>
+    </view>
+    <view class="method-step">
+      <text class="step-num text-success">8秒</text>
+      <text>用嘴巴缓慢呼气</text>
+    </view>
+    <view class="method-note">重复3轮，烟瘾通常在3-5分钟内消退</view>
+  </view>
+
+</view>
