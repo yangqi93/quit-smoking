@@ -60,6 +60,22 @@
       {
         "value": "README.md",
         "type": "file"
+      },
+      {
+        "value": "miniprogram/BRANDING.md",
+        "type": "file"
+      },
+      {
+        "value": "miniprogram/package.json",
+        "type": "file"
+      },
+      {
+        "value": "miniprogram/package-lock.json",
+        "type": "file"
+      },
+      {
+        "value": "miniprogram/jest.config.js",
+        "type": "file"
       }
     ],
     "include": []
