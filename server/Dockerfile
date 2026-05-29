@@ -24,6 +24,6 @@ FROM alpine:3.19
 WORKDIR /app
 COPY --from=builder /app/server .
 
-EXPOSE 8080
+EXPOSE 8081
 
 CMD ["./server"]
