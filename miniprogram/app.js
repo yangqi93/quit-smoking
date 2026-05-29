@@ -1,4 +1,5 @@
 // app.js
+const config = require('./config')
 const api = require('./utils/api')
 const storage = require('./utils/storage')
 
@@ -33,8 +34,8 @@ App({
    */
   async initApp() {
     try {
-      // 1. 自动登录（注册/获取用户身份），传入当前昵称和头像
-      await api.login()
+      // 1. 自动登录（带重试，应对 Docker 启动时端口未就绪）
+      await this._retryLogin()
       console.log('[App] 登录成功')
 
       // 2. 从服务端拉取用户资料（恢复头像昵称）
@@ -114,8 +115,27 @@ App({
   },
 
   /**
-   * 监听网络状态变化
-   * 网络恢复时自动同步本地数据到服务器
+   * 带退避重试的登录
+   * 解决服务器 Docker 启动时 HTTP 端口尚未监听导致的 ERR_CONNECTION_REFUSED
+   */
+  async _retryLogin(maxRetries = 3, baseDelay = 1000) {
+    for (let i = 0; i < maxRetries; i++) {
+      try {
+        if (i > 0) {
+          console.log(`[App] 登录重试第 ${i} 次，等待 ${baseDelay * i}ms...`)
+          await new Promise(r => setTimeout(r, baseDelay * i))
+        }
+        await api.login()
+        return
+      } catch (err) {
+        if (i === maxRetries - 1) throw err
+        console.warn(`[App] 登录失败，准备重试:`, err.message)
+      }
+    }
+  },
+
+  /**
+   * 应用初始化：登录 + 拉取远端数据
    */
   setupNetworkListener() {
     wx.onNetworkStatusChange(res => {
@@ -139,8 +159,6 @@ App({
       yearsSmoked: 5,
       reminderEnabled: false,
       reminderTime: '09:00'
-    },
-    // 后端 API 基础地址
-    apiBaseUrl: 'http://localhost:8080'
+    }
   }
 })

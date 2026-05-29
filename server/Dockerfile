@@ -21,6 +21,13 @@ RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /app/server .
 # ============================================================
 FROM alpine:3.19
 
+# 设置东八区时区（Asia/Shanghai）
+RUN apk add --no-cache tzdata && \
+    cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
+    echo "Asia/Shanghai" > /etc/timezone && \
+    apk del tzdata
+ENV TZ=Asia/Shanghai
+
 WORKDIR /app
 COPY --from=builder /app/server .
 

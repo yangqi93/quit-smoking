@@ -19,3 +19,10 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:?err}
       DB_NAME: ${DB_NAME:-quit_smoking}
       JWT_SECRET: ${JWT_SECRET:?err}
+      TZ: Asia/Shanghai
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8081/ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s

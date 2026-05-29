@@ -1,15 +1,15 @@
 // utils/api.js - 后端 API 封装层
 // 策略：本地存储为主，API 为辅，确保离线可用
 
+const config = require('../config')
 const storage = require('./storage')
 
 /**
  * 获取 API 基础 URL
- * 从 app.js globalData 获取，支持动态配置
+ * 统一从 config.js 读取，按环境自动选择
  */
 function getBaseUrl() {
-  const app = getApp()
-  return (app && app.globalData && app.globalData.apiBaseUrl) || 'http://localhost:8080'
+  return config.getApiBaseUrl()
 }
 
 /**

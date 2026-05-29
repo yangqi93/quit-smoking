@@ -7,22 +7,8 @@ const api = require('../utils/api')
 const storage = require('../utils/storage')
 
 describe('getBaseUrl', () => {
-  test('从 globalData 获取基础 URL', () => {
-    const mockApp = getApp()
-    mockApp.globalData.apiBaseUrl = 'http://custom-api.example.com'
-    expect(api.getBaseUrl()).toBe('http://custom-api.example.com')
-    // 恢复默认
-    mockApp.globalData.apiBaseUrl = 'http://localhost:8080'
-  })
-
-  test('默认使用 localhost:8080', () => {
-    const mockApp = getApp()
-    mockApp.globalData.apiBaseUrl = 'http://localhost:8080'
-    expect(api.getBaseUrl()).toBe('http://localhost:8080')
-  })
-
-  test('globalData 不存在时使用默认值', () => {
-    global.getApp.mockReturnValueOnce(null)
+  test('默认使用 development 环境配置', () => {
+    // 测试环境 fallback 到 development，地址为 localhost:8080
     expect(api.getBaseUrl()).toBe('http://localhost:8080')
   })
 })
@@ -68,9 +54,6 @@ describe('request - 通用请求封装', () => {
   })
 
   test('请求 URL 正确拼接', async () => {
-    const mockApp = getApp()
-    mockApp.globalData.apiBaseUrl = 'http://localhost:8080'
-
     wx.request.mockImplementation(({ success }) => {
       success({ statusCode: 200, data: {} })
     })

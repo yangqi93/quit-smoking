@@ -14,23 +14,56 @@
     },
     "useCompilerPlugins": false,
     "minifyWXML": true,
-    "urlCheck": false
+    "urlCheck": false,
+    "compileWorklet": false,
+    "uploadWithSourceMap": true,
+    "packNpmManually": false,
+    "minifyWXSS": true,
+    "localPlugins": false,
+    "disableUseStrict": false,
+    "condition": false,
+    "swc": false,
+    "disableSWC": true
   },
   "compileType": "miniprogram",
   "simulatorPluginLibVersion": {},
   "packOptions": {
     "ignore": [
-      { "type": "folder", "value": "server" },
-      { "type": "folder", "value": "miniprogram/node_modules" },
-      { "type": "folder", "value": "miniprogram/__tests__" },
-      { "type": "folder", "value": "miniprogram/scripts" },
-      { "type": "file", "value": ".env" },
-      { "type": "file", "value": ".env.example" },
-      { "type": "file", "value": ".gitignore" },
-      { "type": "file", "value": "README.md" }
+      {
+        "value": "server",
+        "type": "folder"
+      },
+      {
+        "value": "miniprogram/node_modules",
+        "type": "folder"
+      },
+      {
+        "value": "miniprogram/__tests__",
+        "type": "folder"
+      },
+      {
+        "value": "miniprogram/scripts",
+        "type": "folder"
+      },
+      {
+        "value": ".env",
+        "type": "file"
+      },
+      {
+        "value": ".env.example",
+        "type": "file"
+      },
+      {
+        "value": ".gitignore",
+        "type": "file"
+      },
+      {
+        "value": "README.md",
+        "type": "file"
+      }
     ],
     "include": []
   },
-  "appid": "",
+  "appid": "wx483e17a486b160ac",
   "editorSetting": {}
 }
