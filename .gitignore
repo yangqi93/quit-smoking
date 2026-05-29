@@ -6,3 +6,6 @@ miniprogram/miniprogram_npm/
 project.private.config.json
 .DS_Store
 *.log
+
+# Docker
+mysql_data/
