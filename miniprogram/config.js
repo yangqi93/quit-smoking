@@ -5,7 +5,7 @@
 const ENV_CONFIG = {
   // 开发环境（微信开发者工具、预览版）
   development: {
-    apiBaseUrl: 'http://81.71.7.91:8081'
+    apiBaseUrl: 'https://api.yangqi.space/quit-smoking'
   },
   // 测试环境（体验版）
   staging: {
@@ -13,7 +13,7 @@ const ENV_CONFIG = {
   },
   // 生产环境（正式版）
   production: {
-    apiBaseUrl: 'http://81.71.7.91:8081'
+    apiBaseUrl: 'https://api.yangqi.space/quit-smoking'
   }
 }
 

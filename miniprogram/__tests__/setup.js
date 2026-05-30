@@ -24,6 +24,14 @@ const wx = {
   // 网络 API
   request: jest.fn(),
 
+  // 登录 API
+  login: jest.fn(),
+
+  // 小程序环境信息
+  getAccountInfoSync: jest.fn(() => ({
+    miniProgram: { envVersion: 'develop' }
+  })),
+
   // UI API
   showLoading: jest.fn(),
   hideLoading: jest.fn(),

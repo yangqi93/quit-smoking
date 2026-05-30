@@ -13,21 +13,56 @@ function getBaseUrl() {
 }
 
 /**
- * 获取用户 OpenID
- * 原型阶段使用本地存储的标识，生产环境走微信登录
+ * 获取认证 Token
+ * Token 由 wx.login() → 后端 /api/auth/login 签发 JWT
  */
-function getOpenId() {
+function getToken() {
   try {
-    let openId = wx.getStorageSync('openId')
-    if (!openId) {
-      // 原型阶段：生成一个随机 OpenID 并持久化
-      openId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9)
-      wx.setStorageSync('openId', openId)
-    }
-    return openId
+    return wx.getStorageSync('auth_token') || ''
   } catch (e) {
-    return 'user_default'
+    return ''
   }
+}
+
+/**
+ * 微信登录：获取临时 code，发送到后端换取 JWT
+ * @returns {Promise<string>} JWT token
+ */
+function wxLogin() {
+  return new Promise((resolve, reject) => {
+    wx.login({
+      success(res) {
+        if (!res.code) {
+          reject(new Error('wx.login 未返回 code'))
+          return
+        }
+        // 发送 code 到后端登录接口
+        const header = { 'Content-Type': 'application/json' }
+        wx.request({
+          url: getBaseUrl() + '/api/auth/login',
+          method: 'POST',
+          header,
+          data: { code: res.code },
+          success(apiRes) {
+            if (apiRes.statusCode === 200 && apiRes.data && apiRes.data.token) {
+              const token = apiRes.data.token
+              wx.setStorageSync('auth_token', token)
+              resolve(token)
+            } else {
+              const errMsg = (apiRes.data && apiRes.data.error) || ('登录失败: ' + apiRes.statusCode)
+              reject(new Error(errMsg))
+            }
+          },
+          fail(err) {
+            reject(new Error('登录请求失败: ' + (err.errMsg || '网络错误')))
+          }
+        })
+      },
+      fail(err) {
+        reject(new Error('wx.login 调用失败: ' + (err.errMsg || '未知错误')))
+      }
+    })
+  })
 }
 
 /**
@@ -52,8 +87,12 @@ function request(url, options = {}) {
     }
 
     const header = {
-      'Content-Type': 'application/json',
-      'X-Open-ID': getOpenId()
+      'Content-Type': 'application/json'
+    }
+
+    const token = getToken()
+    if (token) {
+      header['Authorization'] = 'Bearer ' + token
     }
 
     wx.request({
@@ -91,31 +130,41 @@ function request(url, options = {}) {
 
 /**
  * 登录/注册
- * 使用本地生成的 OpenID 向后端注册，确保后续 API 调用有权限
- * 后端会 COALESCE 更新 nickname 和 avatar_url（有新值时更新，否则保留旧值）
- * @param {string} [openId] 用户 OpenID，不传则自动获取
+ * 调用 wx.login() 获取临时 code，发送给后端换 JWT token
+ * 后端通过微信 openid 区分用户，nickname/avatarUrl 用于更新资料
  * @param {string} [nickname] 用户昵称
  * @param {string} [avatarUrl] 用户头像 URL
- * @returns {Promise<object>} 用户信息
+ * @returns {Promise<object>} { token, user }
  */
-function login(openId, nickname, avatarUrl) {
-  const id = openId || getOpenId()
+async function login(nickname, avatarUrl) {
+  // 1. 调 wx.login 拿 code
+  const code = await new Promise((resolve, reject) => {
+    wx.login({
+      success(res) { resolve(res.code) },
+      fail(err) { reject(new Error('wx.login 失败: ' + err.errMsg)) }
+    })
+  })
+  if (!code) throw new Error('wx.login 未返回 code')
 
-  // 优先使用传入参数，否则从 globalData 读取
+  // 2. 发 code 到自己后端换 JWT
   const app = getApp()
   const gd = (app && app.globalData) || {}
   const nick = nickname || (gd.userInfo && gd.userInfo.nickName) || ''
   const avatar = avatarUrl || (gd.userInfo && gd.userInfo.avatarUrl) || ''
 
-  return request('/api/auth/login', {
+  const res = await request('/api/auth/login', {
     method: 'POST',
     silent: true,
     data: {
-      open_id: id,
+      code: code,
       nickname: nick,
       avatar_url: avatar
     }
   })
+
+  // 3. 持久化 token
+  wx.setStorageSync('auth_token', res.token)
+  return res
 }
 
 /**
@@ -378,7 +427,8 @@ function pullFromServer() {
 module.exports = {
   // 基础
   getBaseUrl,
-  getOpenId,
+  getToken,
+  wxLogin,
   request,
   // 用户
   login,

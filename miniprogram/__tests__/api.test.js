@@ -13,29 +13,28 @@ describe('getBaseUrl', () => {
   })
 })
 
-describe('getOpenId', () => {
+describe('getToken', () => {
   beforeEach(() => {
     wx.__storage && Object.keys(wx.__storage).forEach(k => delete wx.__storage[k])
     jest.clearAllMocks()
   })
 
-  test('返回已存在的 openId', () => {
-    wx.getStorageSync.mockReturnValueOnce('user_existing_123')
-    const openId = api.getOpenId()
-    expect(openId).toBe('user_existing_123')
+  test('返回已存在的 token', () => {
+    wx.getStorageSync.mockReturnValueOnce('jwt_token_abc123')
+    const token = api.getToken()
+    expect(token).toBe('jwt_token_abc123')
   })
 
-  test('生成新的 openId 并持久化', () => {
-    wx.getStorageSync.mockReturnValueOnce('') // 空，需要生成
-    const openId = api.getOpenId()
-    expect(openId).toMatch(/^user_\d+_[a-z0-9]+$/)
-    expect(wx.setStorageSync).toHaveBeenCalledWith('openId', openId)
+  test('无 token 时返回空字符串', () => {
+    wx.getStorageSync.mockReturnValueOnce('')
+    const token = api.getToken()
+    expect(token).toBe('')
   })
 
-  test('异常时返回默认值', () => {
+  test('异常时返回空字符串', () => {
     wx.getStorageSync.mockImplementationOnce(() => { throw new Error('Error') })
-    const openId = api.getOpenId()
-    expect(openId).toBe('user_default')
+    const token = api.getToken()
+    expect(token).toBe('')
   })
 })
 
@@ -87,8 +86,8 @@ describe('request - 通用请求封装', () => {
     expect(callArgs.data).toEqual({ name: 'test' })
   })
 
-  test('请求头包含 Content-Type 和 X-Open-ID', async () => {
-    wx.getStorageSync.mockReturnValueOnce('test_open_id_123')
+  test('有 token 时请求头包含 Authorization Bearer', async () => {
+    wx.getStorageSync.mockReturnValueOnce('jwt_token_xyz')
 
     wx.request.mockImplementation(({ success }) => {
       success({ statusCode: 200, data: {} })
@@ -98,7 +97,21 @@ describe('request - 通用请求封装', () => {
 
     const callArgs = wx.request.mock.calls[0][0]
     expect(callArgs.header['Content-Type']).toBe('application/json')
-    expect(callArgs.header['X-Open-ID']).toBeTruthy()
+    expect(callArgs.header['Authorization']).toBe('Bearer jwt_token_xyz')
+  })
+
+  test('无 token 时请求头不含 Authorization', async () => {
+    wx.getStorageSync.mockReturnValueOnce('')
+
+    wx.request.mockImplementation(({ success }) => {
+      success({ statusCode: 200, data: {} })
+    })
+
+    await api.request('/api/test')
+
+    const callArgs = wx.request.mock.calls[0][0]
+    expect(callArgs.header['Content-Type']).toBe('application/json')
+    expect(callArgs.header['Authorization']).toBeUndefined()
   })
 
   test('非静默模式显示 loading', async () => {
@@ -158,22 +171,50 @@ describe('request - 通用请求封装', () => {
 describe('login', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    // 默认 mock：wx.login 成功返回 code
+    wx.login.mockImplementation(({ success }) => {
+      success({ code: 'wx_test_code_abc' })
+    })
   })
 
-  test('发送正确的登录请求', async () => {
-    wx.getStorageSync.mockReturnValueOnce('user_123')
+  test('调用 wx.login 并发送 code 到后端', async () => {
     wx.request.mockImplementation(({ success }) => {
-      success({ statusCode: 200, data: { user: { id: 1 } } })
+      success({ statusCode: 200, data: { token: 'jwt_abc', user: { id: 1 } } })
     })
 
-    await api.login('user_123', '测试用户', 'http://avatar.jpg')
+    await api.login('测试用户', 'http://avatar.jpg')
 
-    const callArgs = wx.request.mock.calls[0][0]
-    expect(callArgs.url).toContain('/api/auth/login')
-    expect(callArgs.method).toBe('POST')
-    expect(callArgs.data.open_id).toBe('user_123')
-    expect(callArgs.data.nickname).toBe('测试用户')
-    expect(callArgs.data.avatar_url).toBe('http://avatar.jpg')
+    // 验证调了 wx.login
+    expect(wx.login).toHaveBeenCalled()
+
+    // 验证 login 请求的 URL 是 /api/auth/login
+    // 找到 POST /api/auth/login 的那个 request 调用
+    const loginCall = wx.request.mock.calls.find(
+      call => call[0].url && call[0].url.includes('/api/auth/login') && call[0].method === 'POST'
+    )
+    expect(loginCall).toBeTruthy()
+    expect(loginCall[0].data.code).toBe('wx_test_code_abc')
+    expect(loginCall[0].data.nickname).toBe('测试用户')
+    expect(loginCall[0].data.avatar_url).toBe('http://avatar.jpg')
+    expect(loginCall[0].data.open_id).toBeUndefined()
+  })
+
+  test('登录成功时持久化 token', async () => {
+    wx.request.mockImplementation(({ success }) => {
+      success({ statusCode: 200, data: { token: 'jwt_persist_xyz', user: { id: 2 } } })
+    })
+
+    await api.login()
+
+    expect(wx.setStorageSync).toHaveBeenCalledWith('auth_token', 'jwt_persist_xyz')
+  })
+
+  test('wx.login 失败时抛出错误', async () => {
+    wx.login.mockImplementation(({ fail }) => {
+      fail({ errMsg: 'login:fail system error' })
+    })
+
+    await expect(api.login()).rejects.toThrow('wx.login 失败')
   })
 })
 

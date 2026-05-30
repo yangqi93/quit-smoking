@@ -2,22 +2,23 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/yangqi93/quit-smoking/server/config"
 	"github.com/yangqi93/quit-smoking/server/handlers"
 	"github.com/yangqi93/quit-smoking/server/middleware"
 )
 
-func SetupRouter() *gin.Engine {
+func SetupRouter(cfg *config.Config) *gin.Engine {
 	r := gin.Default()
 
 	// 全局中间件
 	r.Use(middleware.CORSConfig())
 
 	// 公开路由（无需鉴权）
-	r.POST("/api/auth/login", handlers.LoginOrRegister)
+	r.POST("/api/auth/login", handlers.LoginOrRegister(cfg))
 
 	// 需要鉴权的路由
 	api := r.Group("/api")
-	api.Use(middleware.AuthMiddleware())
+	api.Use(middleware.AuthMiddleware(cfg.JWTSecret))
 	{
 		// 用户
 		api.GET("/user/profile", handlers.GetProfile)

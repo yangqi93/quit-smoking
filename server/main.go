@@ -24,7 +24,7 @@ func main() {
 	fmt.Println("✅ 数据库初始化成功")
 
 	// 设置路由
-	r := routes.SetupRouter()
+	r := routes.SetupRouter(cfg)
 
 	// 优雅关闭
 	go func() {

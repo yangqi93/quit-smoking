@@ -17,6 +17,8 @@ type Config struct {
 	DBPassword  string
 	DBName      string
 	JWTSecret   string
+	WXAppID     string
+	WXAppSecret string
 	Environment string
 }
 
@@ -35,6 +37,8 @@ func Load() *Config {
 		DBPassword:  getEnv("DB_PASSWORD", ""),
 		DBName:      getEnv("DB_NAME", "quit_smoking"),
 		JWTSecret:   getEnv("JWT_SECRET", "quit-smoking-secret-change-in-prod"),
+		WXAppID:     getEnv("WX_APP_ID", ""),
+		WXAppSecret: getEnv("WX_APP_SECRET", ""),
 		Environment: getEnv("ENV", "development"),
 	}
 }
