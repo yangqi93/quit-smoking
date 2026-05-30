@@ -2,6 +2,7 @@
 const calc = require('../../utils/calculator')
 const storage = require('../../utils/storage')
 const api = require('../../utils/api')
+const achievements = require('../../utils/achievements')
 
 Page({
   data: {
@@ -25,7 +26,12 @@ Page({
     subscribeTemplateId: '',
     // 用户信息
     avatarUrl: '',
-    nickName: ''
+    nickName: '',
+    // 成就徽章
+    achievementList: [],   // 带 unlocked 状态的完整列表
+    unlockedCount: 0,      // 已解锁数量
+    newAchievement: null,  // 新解锁的成就（用于弹窗）
+    showAchievementPopup: false
   },
 
   onLoad(options) {
@@ -83,6 +89,9 @@ Page({
 
     // 异步从服务端拉取最新头像昵称
     this._fetchProfileFromServer()
+
+    // 计算成就
+    this._refreshAchievements()
   },
 
   /**
@@ -181,6 +190,69 @@ Page({
     } catch (err) {
       console.warn('[Profile] 从服务端拉取用户资料失败:', err.message)
     }
+  },
+
+  /**
+   * 计算并刷新成就列表，检测新解锁并弹窗
+   */
+  _refreshAchievements() {
+    const record = storage.getQuitRecord()
+    if (!record) return
+
+    const days = record.quitDate ? calc.calcQuitDuration(record.quitDate).days : 0
+    const moneySaved = calc.calcMoneySaved(
+      days,
+      record.cigarettesPerDay || 20,
+      record.pricePerPack || 20,
+      record.cigarettesPerPack || 20
+    )
+    const cigarettesAvoided = calc.calcCigarettesAvoided(days, record.cigarettesPerDay || 20)
+    // 打卡次数：getCheckInHistory 返回对象，key 数量即打卡次数
+    const checkInHistory = storage.getCheckInHistory()
+    const checkins = Object.keys(checkInHistory).length
+
+    const stats = { days, moneySaved, cigarettesAvoided, checkins }
+    const currentIds = achievements.calcUnlockedIds(stats)
+
+    // 读取上次已解锁列表，检测新解锁
+    const prevIds = wx.getStorageSync('unlockedAchievements') || []
+    const newOnes = achievements.detectNewAchievements(prevIds, currentIds)
+
+    // 更新持久化
+    wx.setStorageSync('unlockedAchievements', currentIds)
+
+    // 更新 UI
+    const achievementList = achievements.getAchievementsWithStatus(currentIds)
+    const unlockedCount = currentIds.length
+    this.setData({ achievementList, unlockedCount })
+
+    // 如果有新解锁，依次弹出庆祝弹窗（取第一个，其余排队）
+    if (newOnes.length > 0) {
+      this._showAchievementCelebration(newOnes, 0)
+    }
+  },
+
+  /**
+   * 依次展示新解锁成就弹窗
+   */
+  _showAchievementCelebration(newOnes, index) {
+    if (index >= newOnes.length) return
+    const a = newOnes[index]
+    this.setData({ newAchievement: a, showAchievementPopup: true })
+    // 3秒后自动关闭，展示下一个
+    setTimeout(() => {
+      this.setData({ showAchievementPopup: false })
+      setTimeout(() => {
+        this._showAchievementCelebration(newOnes, index + 1)
+      }, 400)
+    }, 3000)
+  },
+
+  /**
+   * 手动关闭成就弹窗
+   */
+  onCloseAchievementPopup() {
+    this.setData({ showAchievementPopup: false })
   },
 
   // 开始戒烟

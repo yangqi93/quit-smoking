@@ -55,6 +55,7 @@ describe('Profile 页面 - 用户信息功能', () => {
     page.onNicknameInput = pageObj.onNicknameInput.bind(page)
     page._syncUserInfoToServer = pageObj._syncUserInfoToServer.bind(page)
     page._fetchProfileFromServer = pageObj._fetchProfileFromServer.bind(page)
+    page._refreshAchievements = pageObj._refreshAchievements.bind(page)
     page.loadSettings = pageObj.loadSettings.bind(page)
   })
 

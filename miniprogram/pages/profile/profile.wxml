@@ -34,6 +34,37 @@
       </view>
     </view>
 
+    <!-- 成就徽章墙 -->
+    <view class="card achievements-card">
+      <view class="card-title">🏅 成就徽章</view>
+      <view class="achievement-summary">
+        <text class="achievement-count text-primary">{{unlockedCount}}</text>
+        <text class="achievement-total"> / {{achievementList.length}} 枚已解锁</text>
+      </view>
+      <view class="achievement-grid">
+        <view
+          wx:for="{{achievementList}}"
+          wx:key="id"
+          class="achievement-item {{item.unlocked ? 'unlocked' : 'locked'}}"
+        >
+          <text class="achievement-icon">{{item.unlocked ? item.icon : '🔒'}}</text>
+          <text class="achievement-name">{{item.unlocked ? item.title : '???'}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 成就庆祝弹窗 -->
+    <view wx:if="{{showAchievementPopup}}" class="achievement-popup-mask" bindtap="onCloseAchievementPopup">
+      <view class="achievement-popup" catchtap="">
+        <view class="popup-sparkle">✨</view>
+        <view class="popup-icon">{{newAchievement.icon}}</view>
+        <view class="popup-title">成就解锁！</view>
+        <view class="popup-name">{{newAchievement.title}}</view>
+        <view class="popup-desc">{{newAchievement.desc}}</view>
+        <view class="popup-close" bindtap="onCloseAchievementPopup">知道啦 🎉</view>
+      </view>
+    </view>
+
     <!-- 戒烟信息卡 -->
     <view class="card">
       <view class="card-title">🚭 戒烟信息</view>
