@@ -19,6 +19,8 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:?err}
       DB_NAME: ${DB_NAME:-quit_smoking}
       JWT_SECRET: ${JWT_SECRET:?err}
+      WX_APP_ID: ${WX_APP_ID:?err}
+      WX_APP_SECRET: ${WX_APP_SECRET:?err}
       TZ: Asia/Shanghai
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8081/ping"]
