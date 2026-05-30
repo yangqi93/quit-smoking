@@ -22,10 +22,12 @@ func SetupRouter(cfg *config.Config) *gin.Engine {
 	{
 		// 用户
 		api.GET("/user/profile", handlers.GetProfile)
+		api.PUT("/user/profile", handlers.UpdateProfile)
 
 		// 戒烟记录
 		api.POST("/quit-record", handlers.CreateQuitRecord)
 		api.GET("/quit-record/active", handlers.GetActiveQuitRecord)
+		api.GET("/quit-record/history", handlers.GetQuitRecordHistory)
 
 		// 仪表盘
 		api.GET("/dashboard", handlers.GetDashboard)
@@ -39,6 +41,8 @@ func SetupRouter(cfg *config.Config) *gin.Engine {
 
 		// 烟瘾记录
 		api.POST("/craving", handlers.CreateCraving)
+		api.GET("/craving/history", handlers.GetCravingHistory)
+		api.DELETE("/craving/:id", handlers.DeleteCraving)
 	}
 
 	// 健康检查

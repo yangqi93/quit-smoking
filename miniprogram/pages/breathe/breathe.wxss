@@ -15,7 +15,7 @@
 
 .section-title {
   font-size: 30rpx;
-  color: #e8e8f0;
+  color: var(--text-primary);
   margin-bottom: 20rpx;
   text-align: center;
 }
@@ -30,8 +30,8 @@
 .trigger-item {
   padding: 16rpx 28rpx;
   border-radius: 40rpx;
-  background: #2a2a4a;
-  color: #8888aa;
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
   font-size: 26rpx;
   transition: all 0.3s;
 }
@@ -42,14 +42,36 @@
   border: 2rpx solid #4ecdc4;
 }
 
-/* 呼吸圈 */
+/* 呼吸圈容器 */
 .breath-circle-container {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
   margin: 60rpx 0;
+  width: 400rpx;
+  height: 400rpx;
 }
 
+/* 背景呼吸涟漪 */
+.breath-bg-glow {
+  position: absolute;
+  width: 340rpx;
+  height: 340rpx;
+  border-radius: 50%;
+  filter: blur(24rpx);
+  opacity: 0.4;
+  transition: all 4s ease-in-out;
+  animation: breath-bg-pulse 4s ease-in-out infinite alternate;
+}
+
+@keyframes breath-bg-pulse {
+  0% { transform: scale(0.85); opacity: 0.25; }
+  50% { transform: scale(1.15); opacity: 0.45; }
+  100% { transform: scale(0.85); opacity: 0.25; }
+}
+
+/* 呼吸圈 */
 .breath-circle {
   width: 320rpx;
   height: 320rpx;
@@ -59,8 +81,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: transform 4s ease-in-out, opacity 1s ease;
+  transition: transform 4s ease-in-out, opacity 1s ease, border-color 1s ease, box-shadow 1s ease;
   box-shadow: 0 0 80rpx rgba(78, 205, 196, 0.2);
+  z-index: 1;
 }
 
 .breath-inner {
@@ -79,12 +102,12 @@
 
 .phase-text {
   font-size: 28rpx;
-  color: #e8e8f0;
+  color: var(--text-primary);
 }
 
 .phase-desc {
   font-size: 26rpx;
-  color: #8888aa;
+  color: var(--text-secondary);
   text-align: center;
   margin-bottom: 20rpx;
 }
@@ -92,7 +115,7 @@
 /* 轮次进度 */
 .rounds-progress {
   font-size: 26rpx;
-  color: #8888aa;
+  color: var(--text-secondary);
   margin-bottom: 30rpx;
 }
 
@@ -130,8 +153,8 @@
 
 .method-note {
   font-size: 24rpx;
-  color: #8888aa;
+  color: var(--text-secondary);
   margin-top: 16rpx;
   padding-top: 16rpx;
-  border-top: 2rpx solid #2a2a4a;
+  border-top: 2rpx solid var(--border-light);
 }

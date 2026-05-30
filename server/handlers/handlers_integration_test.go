@@ -7,19 +7,24 @@ import (
 	"net/http/httptest"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/yangqi93/quit-smoking/server/config"
 	"github.com/yangqi93/quit-smoking/server/middleware"
 	"github.com/yangqi93/quit-smoking/server/models"
 )
 
+var testCfg = &config.Config{
+	JWTSecret: "test-jwt-secret-integration",
+}
+
 // setupTestRouter 创建测试路由和数据库
-// 需要环境变量配置 MySQL 连接，或使用默认的本地测试数据库
 func setupTestRouter(t *testing.T) (*gin.Engine, func()) {
 	t.Helper()
 	gin.SetMode(gin.TestMode)
 
-	// 使用环境变量配置 MySQL 测试数据库，默认本地
 	dsn := os.Getenv("TEST_DB_DSN")
 	if dsn == "" {
 		dsn = "root:@tcp(127.0.0.1:3306)/quit_smoking_test?charset=utf8mb4&parseTime=true&loc=Local"
@@ -32,11 +37,11 @@ func setupTestRouter(t *testing.T) (*gin.Engine, func()) {
 	r.Use(middleware.CORSConfig())
 
 	// 公开路由
-	r.POST("/api/auth/login", LoginOrRegister)
+	r.POST("/api/auth/login", LoginOrRegister(testCfg))
 
 	// 鉴权路由
 	api := r.Group("/api")
-	api.Use(middleware.AuthMiddleware())
+	api.Use(middleware.AuthMiddleware(testCfg.JWTSecret))
 	{
 		api.GET("/user/profile", GetProfile)
 		api.POST("/quit-record", CreateQuitRecord)
@@ -48,13 +53,11 @@ func setupTestRouter(t *testing.T) (*gin.Engine, func()) {
 		api.POST("/craving", CreateCraving)
 	}
 
-	// 健康检查
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{"message": "pong", "service": "quit-smoking-api"})
 	})
 
 	cleanup := func() {
-		// 清理测试数据
 		models.DB.Exec("DELETE FROM cravings")
 		models.DB.Exec("DELETE FROM check_ins")
 		models.DB.Exec("DELETE FROM quit_records")
@@ -67,7 +70,7 @@ func setupTestRouter(t *testing.T) (*gin.Engine, func()) {
 
 const testOpenID = "test_user_001"
 
-// makeAuthenticatedRequest 创建带认证头的请求
+// makeAuthenticatedRequest 创建带 JWT 认证头的请求
 func makeAuthenticatedRequest(method, url string, body interface{}) *http.Request {
 	var reqBody *bytes.Reader
 	if body != nil {
@@ -77,9 +80,17 @@ func makeAuthenticatedRequest(method, url string, body interface{}) *http.Reques
 		reqBody = bytes.NewReader([]byte{})
 	}
 
+	// 生成 JWT
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"open_id": testOpenID,
+		"iat":     time.Now().Unix(),
+		"exp":     time.Now().Add(1 * time.Hour).Unix(),
+	})
+	tokenStr, _ := token.SignedString([]byte(testCfg.JWTSecret))
+
 	req := httptest.NewRequest(method, url, reqBody)
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("X-Open-ID", testOpenID)
+	req.Header.Set("Authorization", "Bearer "+tokenStr)
 	return req
 }
 
@@ -148,18 +159,8 @@ func TestLoginOrRegister_NewUser(t *testing.T) {
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 
-	if w.Code != http.StatusOK {
-		t.Errorf("期望状态码 %d，实际 %d，响应: %s", http.StatusOK, w.Code, w.Body.String())
-	}
-
-	var response map[string]interface{}
-	json.Unmarshal(w.Body.Bytes(), &response)
-	user, ok := response["user"].(map[string]interface{})
-	if !ok {
-		t.Fatal("响应中缺少 user 字段")
-	}
-	if user["open_id"] != "new_user_123" {
-		t.Errorf("期望 open_id=new_user_123，实际 %v", user["open_id"])
+	if w.Code != http.StatusBadRequest {
+		t.Errorf("期望状态码 %d（缺少 code 字段），实际 %d，响应: %s", http.StatusBadRequest, w.Code, w.Body.String())
 	}
 }
 
@@ -193,21 +194,6 @@ func TestAuthMiddleware_MissingHeader(t *testing.T) {
 
 	if w.Code != http.StatusUnauthorized {
 		t.Errorf("期望状态码 %d，实际 %d", http.StatusUnauthorized, w.Code)
-	}
-}
-
-func TestAuthMiddleware_QueryParam(t *testing.T) {
-	r, cleanup := setupTestRouter(t)
-	defer cleanup()
-	createTestUser(t)
-
-	req := httptest.NewRequest("GET", "/api/user/profile?open_id="+testOpenID, nil)
-	req.Header.Set("Content-Type", "application/json")
-	w := httptest.NewRecorder()
-	r.ServeHTTP(w, req)
-
-	if w.Code != http.StatusOK {
-		t.Errorf("期望状态码 %d，实际 %d，响应: %s", http.StatusOK, w.Code, w.Body.String())
 	}
 }
 

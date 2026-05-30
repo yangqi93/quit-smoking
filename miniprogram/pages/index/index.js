@@ -2,8 +2,9 @@
 const calc = require('../../utils/calculator')
 const storage = require('../../utils/storage')
 const api = require('../../utils/api')
+const theme = require('../../utils/theme')
 
-Page({
+Page(theme.mixin({
   data: {
     // 戒烟状态
     hasActiveRecord: false,
@@ -19,6 +20,9 @@ Page({
     nextMilestone: '',
     milestoneDaysLeft: 0,
     milestoneProgress: 0,
+    // 年度进度（环形图用）
+    yearProgress: 0,
+    yearPercent: 0,
     // 鼓励语
     encouragement: '',
     // 用户昵称
@@ -91,6 +95,11 @@ Page({
       : 100
     const encouragement = calc.getEncouragement(duration.days)
 
+    // 年度目标 365 天环形进度
+    const yearGoal = 365
+    const yearPct = Math.min(100, Math.round((duration.days / yearGoal) * 100))
+    const yearDeg = (yearPct / 100) * 360
+
     this.setData({
       days: duration.days,
       hours: duration.hours,
@@ -98,6 +107,8 @@ Page({
       moneySaved: money.toFixed(2),
       cigarettesAvoided: avoided,
       lifeRegained: life,
+      yearProgress: yearDeg,
+      yearPercent: yearPct,
       nextMilestone: milestone.title,
       milestoneDaysLeft: milestone.daysLeft,
       milestoneProgress: progress,
@@ -126,6 +137,7 @@ Page({
 
   // 烟瘾急救
   onEmergency() {
+    wx.vibrateShort({ type: 'medium' })
     wx.switchTab({
       url: '/pages/breathe/breathe'
     })
@@ -164,4 +176,4 @@ Page({
       path: '/pages/index/index'
     }
   }
-})
+}))

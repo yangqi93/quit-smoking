@@ -1,5 +1,6 @@
 <!-- pages/health/health.wxml -->
-<view class="container">
+<view class="root {{themeClass}}">
+<view class="container {{pageVisible ? 'page-visible' : ''}}">
 
   <!-- 未开始 -->
   <view wx:if="{{!isActive}}" class="empty-state">
@@ -26,7 +27,7 @@
     </view>
 
     <!-- 时间线列表 -->
-    <view class="timeline-list">
+    <view class="timeline-list {{animateEntrance ? 'animating' : ''}}">
 
       <view
         wx:for="{{timeline}}"
@@ -56,4 +57,5 @@
     </view>
   </view>
 
+</view>
 </view>

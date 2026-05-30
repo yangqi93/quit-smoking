@@ -2,9 +2,13 @@
 const config = require('./config')
 const api = require('./utils/api')
 const storage = require('./utils/storage')
+const theme = require('./utils/theme')
 
 App({
   onLaunch() {
+    // 初始化主题
+    this._initTheme()
+
     // 检查更新
     const updateManager = wx.getUpdateManager()
     updateManager.onUpdateReady(function () {
@@ -115,6 +119,48 @@ App({
   },
 
   /**
+   * 初始化主题
+   */
+  _initTheme() {
+    const mode = theme.getMode()
+    const cls = theme.resolveThemeClass(mode)
+    this.globalData.themeMode = mode
+    this.globalData.themeClass = cls
+
+    // 应用主题到系统栏
+    theme.applySystemBars(mode)
+
+    // 监听系统主题变化（仅在 auto 模式下生效）
+    wx.onThemeChange(({ theme: sysTheme }) => {
+      if (theme.getMode() === 'auto') {
+        const newCls = sysTheme === 'dark' ? 'theme-dark' : ''
+        if (this.globalData.themeClass !== newCls) {
+          this.globalData.themeClass = newCls
+          this.globalData.themeMode = 'auto'
+          // 更新系统栏 + 通知页面（直接传入 sysTheme 避免 getSystemInfoSync 不同步）
+          theme.applySystemBars('auto', sysTheme)
+          this._notifyThemeChange(newCls)
+        }
+      }
+    })
+  },
+
+  /**
+   * 通知各页面主题已变化
+   */
+  _notifyThemeChange(cls) {
+    const pages = getCurrentPages()
+    pages.forEach(page => {
+      if (page.updatePageTheme) {
+        page.updatePageTheme(cls)
+      } else {
+        // fallback: 直接 setData
+        page.setData({ themeClass: cls || '' })
+      }
+    })
+  },
+
+  /**
    * 带退避重试的登录
    * 解决服务器 Docker 启动时 HTTP 端口尚未监听导致的 ERR_CONNECTION_REFUSED
    */
@@ -152,6 +198,8 @@ App({
     hasActiveRecord: false,
     quitRecord: null,
     userInfo: null,
+    themeMode: 'auto',
+    themeClass: '',
     settings: {
       cigarettesPerDay: 20,
       pricePerPack: 20,

@@ -1,8 +1,9 @@
-// pages/breathe/breathe.js - 烟瘾急救呼吸引导页
+// pages/breathe/breathe.js - 4-7-8 呼吸引导页
 const storage = require('../../utils/storage')
 const api = require('../../utils/api')
+const theme = require('../../utils/theme')
 
-Page({
+Page(theme.mixin({
   data: {
     // 呼吸状态
     isBreathing: false,
@@ -16,6 +17,8 @@ Page({
     // 动画
     circleScale: 1,
     circleOpacity: 0.6,
+    circleColor: '#4ecdc4',
+    bgScale: 1,
     // 倒计时
     countdown: 0,
     // 触发场景
@@ -60,7 +63,9 @@ Page({
       phaseDesc: '通过鼻子缓慢深吸',
       countdown: this.data.inhaleTime,
       circleScale: 1.8,
-      circleOpacity: 1
+      circleOpacity: 1,
+      circleColor: '#4ecdc4',
+      bgScale: 1.6
     })
     this.runCountdown(this.data.inhaleTime, () => this.startHold())
   },
@@ -71,7 +76,9 @@ Page({
       phase: 'hold',
       phaseText: '屏住呼吸',
       phaseDesc: '保持，让氧气充分交换',
-      countdown: this.data.holdTime
+      countdown: this.data.holdTime,
+      circleColor: '#ffd93d',
+      bgScale: 1.4
     })
     this.runCountdown(this.data.holdTime, () => this.startExhale())
   },
@@ -84,7 +91,9 @@ Page({
       phaseDesc: '通过嘴巴慢慢吐出',
       countdown: this.data.exhaleTime,
       circleScale: 1,
-      circleOpacity: 0.6
+      circleOpacity: 0.6,
+      circleColor: '#6bff9e',
+      bgScale: 1
     })
     this.runCountdown(this.data.exhaleTime, () => {
       const rounds = this.data.completedRounds + 1
@@ -141,6 +150,8 @@ Page({
       countdown: 0,
       circleScale: 1,
       circleOpacity: 0.6,
+      circleColor: '#4ecdc4',
+      bgScale: 1,
       completedRounds: 0
     })
   },
@@ -156,4 +167,4 @@ Page({
       path: '/pages/breathe/breathe'
     }
   }
-})
+}))

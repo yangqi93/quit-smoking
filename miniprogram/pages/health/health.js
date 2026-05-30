@@ -2,8 +2,9 @@
 const calc = require('../../utils/calculator')
 const storage = require('../../utils/storage')
 const api = require('../../utils/api')
+const theme = require('../../utils/theme')
 
-Page({
+Page(theme.mixin({
   data: {
     isActive: false,
     hoursElapsed: 0,
@@ -11,7 +12,9 @@ Page({
     // 统计摘要
     achievedCount: 0,
     totalCount: 0,
-    progressPercent: 0
+    progressPercent: 0,
+    // 首次渲染播动画，避免切换Tab时抖动
+    animateEntrance: false
   },
 
   onLoad() {
@@ -56,13 +59,18 @@ Page({
       }
     })
 
+    // 首次加载播入场动画，后续切换Tab直接显示避免抖动
+    const isFirst = !this._hasLoaded
+    this._hasLoaded = true
+
     this.setData({
       isActive: true,
       hoursElapsed,
       timeline,
       achievedCount,
       totalCount: milestones.length,
-      progressPercent: Math.round((achievedCount / milestones.length) * 100)
+      progressPercent: Math.round((achievedCount / milestones.length) * 100),
+      animateEntrance: isFirst
     })
   },
 
@@ -103,4 +111,4 @@ Page({
       path: '/pages/health/health'
     }
   }
-})
+}))

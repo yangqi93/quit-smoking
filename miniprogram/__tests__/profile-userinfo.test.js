@@ -9,6 +9,17 @@
 const storage = require('../utils/storage')
 const api = require('../utils/api')
 
+// mock theme module
+jest.mock('../utils/theme', () => ({
+  getMode: jest.fn(() => 'auto'),
+  getThemeLabel: jest.fn(() => '跟随系统'),
+  setMode: jest.fn(),
+  mixin: (def) => def,  // no-op: 测试中不需要包装 onLoad/onShow
+  getCurrentClass: jest.fn(() => ''),
+  resolveThemeClass: jest.fn(() => ''),
+  STORAGE_KEY: 'themeMode'
+}))
+
 // 捕获 Page() 传入的对象
 let pageObj = null
 global.Page = jest.fn((obj) => { pageObj = obj })
@@ -38,6 +49,7 @@ describe('Profile 页面 - 用户信息功能', () => {
         reason: '',
         reminderEnabled: false,
         reminderTime: '09:00',
+        currentTime: '',
         quitDate: '',
         daysQuit: 0,
         showStartForm: false,
@@ -57,6 +69,8 @@ describe('Profile 页面 - 用户信息功能', () => {
     page._fetchProfileFromServer = pageObj._fetchProfileFromServer.bind(page)
     page._refreshAchievements = pageObj._refreshAchievements.bind(page)
     page.loadSettings = pageObj.loadSettings.bind(page)
+    page._loadTheme = (pageObj._loadTheme || (() => {})).bind(page)
+    page.onThemeChange = (pageObj.onThemeChange || (() => {})).bind(page)
   })
 
   // ========= onChooseAvatar 测试 =========
@@ -130,12 +144,11 @@ describe('Profile 页面 - 用户信息功能', () => {
       expect(page.data.nickName).toBe('新昵称')
     })
 
-    test('空字符串时不更新 (BUG: 用户无法清空昵称)', () => {
+    test('空字符串时允许清空昵称 (已修复)', () => {
       page.data.nickName = '旧昵称'
       page.onNicknameInput({ detail: { value: '' } })
 
-      // 当前的 if (!name) return 会阻止清空操作
-      expect(page.data.nickName).toBe('旧昵称')
+      expect(page.data.nickName).toBe('')
     })
 
     test('保存昵称到本地 storage', () => {
@@ -175,34 +188,34 @@ describe('Profile 页面 - 用户信息功能', () => {
   // ========= _syncUserInfoToServer 测试 =========
 
   describe('_syncUserInfoToServer', () => {
-    test('调用 api.login(undefined, nickName, avatarUrl)', async () => {
+    test('调用 api.updateProfile(nickName, avatarUrl)', async () => {
       page.data.nickName = '测试用户'
       page.data.avatarUrl = 'http://avatar.jpg'
 
-      const loginSpy = jest.spyOn(api, 'login').mockResolvedValue({})
+      const spy = jest.spyOn(api, 'updateProfile').mockResolvedValue({})
 
       page._syncUserInfoToServer()
 
-      expect(loginSpy).toHaveBeenCalledWith(undefined, '测试用户', 'http://avatar.jpg')
-      loginSpy.mockRestore()
+      expect(spy).toHaveBeenCalledWith('测试用户', 'http://avatar.jpg')
+      spy.mockRestore()
     })
 
     test('nickName 和 avatarUrl 为空时也能同步', () => {
-      const loginSpy = jest.spyOn(api, 'login').mockResolvedValue({})
+      const spy = jest.spyOn(api, 'updateProfile').mockResolvedValue({})
 
       page._syncUserInfoToServer()
 
-      expect(loginSpy).toHaveBeenCalledWith(undefined, '', '')
-      loginSpy.mockRestore()
+      expect(spy).toHaveBeenCalledWith('', '')
+      spy.mockRestore()
     })
 
     test('同步失败时 console.warn 不抛异常', () => {
-      const loginSpy = jest.spyOn(api, 'login').mockRejectedValue(new Error('网络错误'))
+      const spy = jest.spyOn(api, 'updateProfile').mockRejectedValue(new Error('网络错误'))
       const warnSpy = jest.spyOn(console, 'warn').mockImplementation()
 
       expect(() => page._syncUserInfoToServer()).not.toThrow()
 
-      loginSpy.mockRestore()
+      spy.mockRestore()
       warnSpy.mockRestore()
     })
   })

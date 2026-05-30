@@ -8,47 +8,47 @@ type User struct {
 	OpenID    string    `json:"open_id"`              // 微信 OpenID
 	Nickname  string    `json:"nickname"`              // 昵称
 	AvatarURL string    `json:"avatar_url"`            // 头像
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	CreatedAt *time.Time `json:"created_at"`
+	UpdatedAt *time.Time `json:"updated_at"`
 }
 
 // QuitRecord 戒烟记录
 type QuitRecord struct {
-	ID              int64     `json:"id"`
-	UserID          int64     `json:"user_id"`
-	QuitDate        time.Time `json:"quit_date"`          // 开始戒烟时间
-	CigarettesPerDay int      `json:"cigarettes_per_day"` // 每天抽烟数
-	PricePerPack    float64   `json:"price_per_pack"`     // 每包价格
-	CigarettesPerPack int     `json:"cigarettes_per_pack"` // 每包支数
-	YearsSmoked     float64   `json:"years_smoked"`       // 烟龄（年）
-	Reason          string    `json:"reason"`              // 戒烟理由
-	IsActive        bool      `json:"is_active"`           // 是否正在戒烟
-	CreatedAt       time.Time `json:"created_at"`
-	UpdatedAt       time.Time `json:"updated_at"`
+	ID               int64      `json:"id"`
+	UserID           int64      `json:"user_id"`
+	QuitDate         time.Time  `json:"quit_date"`           // 开始戒烟时间
+	CigarettesPerDay  int       `json:"cigarettes_per_day"`  // 每天抽烟数
+	PricePerPack     float64    `json:"price_per_pack"`      // 每包价格
+	CigarettesPerPack int       `json:"cigarettes_per_pack"` // 每包支数
+	YearsSmoked      float64    `json:"years_smoked"`        // 烟龄（年）
+	Reason           string     `json:"reason"`              // 戒烟理由
+	IsActive         bool       `json:"is_active"`           // 是否正在戒烟
+	CreatedAt        *time.Time `json:"created_at"`
+	UpdatedAt        *time.Time `json:"updated_at"`
 }
 
 // CheckIn 打卡记录
 type CheckIn struct {
-	ID        int64     `json:"id"`
-	UserID    int64     `json:"user_id"`
-	RecordID  int64     `json:"record_id"`
-	Date      string    `json:"date"`       // YYYY-MM-DD
-	IsSuccess bool      `json:"is_success"` // 是否成功
-	Mood      string    `json:"mood"`       // 心情: good/normal/bad
-	Note      string    `json:"note"`       // 备注
-	CreatedAt time.Time `json:"created_at"`
+	ID        int64      `json:"id"`
+	UserID    int64      `json:"user_id"`
+	RecordID  int64      `json:"record_id"`
+	Date      string     `json:"date"`       // YYYY-MM-DD
+	IsSuccess bool       `json:"is_success"` // 是否成功
+	Mood      string     `json:"mood"`       // 心情: good/normal/bad
+	Note      string     `json:"note"`       // 备注
+	CreatedAt *time.Time `json:"created_at"`
 }
 
 // Craving 烟瘾发作记录
 type Craving struct {
-	ID        int64     `json:"id"`
-	UserID    int64     `json:"user_id"`
-	RecordID  int64     `json:"record_id"`
-	Trigger   string    `json:"trigger"`   // 触发场景: stress/social/boredom/habit/other
-	Intensity int       `json:"intensity"` // 强度 1-10
-	Resolved  bool      `json:"resolved"`  // 是否已克服
-	Method    string    `json:"method"`    // 克服方式: breathe/water/walk/other
-	CreatedAt time.Time `json:"created_at"`
+	ID        int64      `json:"id"`
+	UserID    int64      `json:"user_id"`
+	RecordID  int64      `json:"record_id"`
+	Trigger   string     `json:"trigger"`   // 触发场景: stress/social/boredom/habit/other
+	Intensity int        `json:"intensity"` // 强度 1-10
+	Resolved  bool       `json:"resolved"`  // 是否已克服
+	Method    string     `json:"method"`    // 克服方式: breathe/water/walk/other
+	CreatedAt *time.Time `json:"created_at"`
 }
 
 // DashboardData 首页仪表盘数据

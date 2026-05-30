@@ -1,5 +1,6 @@
 <!-- pages/breathe/breathe.wxml -->
-<view class="container breathe-page">
+<view class="root {{themeClass}}">
+<view class="container breathe-page {{pageVisible ? 'page-visible' : ''}}">
 
   <!-- 触发场景选择 -->
   <view wx:if="{{phase === 'ready'}}" class="trigger-section">
@@ -19,9 +20,15 @@
 
   <!-- 呼吸引导圈 -->
   <view class="breath-circle-container">
+    <!-- 背景呼吸涟漪 -->
+    <view
+      wx:if="{{isBreathing}}"
+      class="breath-bg-glow"
+      style="background: radial-gradient(circle, {{circleColor}}33, transparent); --bg-scale: {{bgScale}};"
+    ></view>
     <view
       class="breath-circle"
-      style="transform: scale({{circleScale}}); opacity: {{circleOpacity}};"
+      style="transform: scale({{circleScale}}); opacity: {{circleOpacity}}; border-color: {{circleColor}}; box-shadow: 0 0 80rpx {{circleColor}}33;"
     >
       <view class="breath-inner">
         <text class="countdown-number" wx:if="{{countdown > 0}}">{{countdown}}</text>
@@ -82,4 +89,5 @@
     <view class="method-note">重复3轮，烟瘾通常在3-5分钟内消退</view>
   </view>
 
+</view>
 </view>

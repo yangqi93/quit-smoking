@@ -1,5 +1,6 @@
 <!-- pages/profile/profile.wxml -->
-<view class="container">
+<view class="root {{themeClass}}">
+<view class="container {{pageVisible ? 'page-visible' : ''}}">
 
   <!-- 已戒烟状态 -->
   <view wx:if="{{hasActiveRecord && !showStartForm}}" class="profile-section">
@@ -94,22 +95,11 @@
       </view>
     </view>
 
-    <!-- 提醒设置 -->
-    <view class="card">
-      <view class="card-title">⏰ 提醒设置</view>
-      <view class="info-row">
-        <text class="info-label">每日打卡提醒</text>
-        <switch
-          checked="{{reminderEnabled}}"
-          bindchange="onReminderToggle"
-          color="#4ecdc4"
-        />
-      </view>
-      <view wx:if="{{reminderEnabled}}" class="info-row">
-        <text class="info-label">提醒时间</text>
-        <picker mode="time" value="{{reminderTime}}" bindchange="onReminderTimeChange">
-          <text class="info-value text-primary">{{reminderTime}}</text>
-        </picker>
+    <!-- 主题设置 -->
+    <view class="card" bindtap="onThemeChange">
+      <view class="info-row" style="border-bottom: none;">
+        <text class="info-label">🎨 主题</text>
+        <text class="info-value" style="color: #4ecdc4;">{{themeLabel}} ›</text>
       </view>
     </view>
 
@@ -129,12 +119,10 @@
 
     <view class="card">
       <view class="form-group">
-        <text class="form-label">戒烟开始日期</text>
-        <picker mode="date" value="{{quitDate}}" bindchange="onDateChange">
-          <view class="form-input picker-input">
-            {{quitDate || '选择日期'}}
-          </view>
-        </picker>
+        <text class="form-label">戒烟开始时间</text>
+        <view class="form-input picker-input" style="color: #4ecdc4;">
+          {{currentTime || '现在'}}
+        </view>
       </view>
 
       <view class="form-group">
@@ -205,4 +193,5 @@
     <button class="btn-primary" bindtap="onStartQuit">我要戒烟</button>
   </view>
 
+</view>
 </view>

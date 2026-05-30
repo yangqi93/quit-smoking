@@ -176,6 +176,22 @@ function getProfile(options) {
   return request('/api/user/profile', options)
 }
 
+/**
+ * 更新用户资料（昵称/头像）
+ * @param {string} nickname 昵称（传空字符串可清空）
+ * @param {string} avatarUrl 头像 URL
+ * @returns {Promise<object>}
+ */
+function updateProfile(nickname, avatarUrl) {
+  return request('/api/user/profile', {
+    method: 'PUT',
+    data: {
+      nickname: nickname || '',
+      avatar_url: avatarUrl || ''
+    }
+  })
+}
+
 // ========== 戒烟记录接口 ==========
 
 /**
@@ -240,6 +256,19 @@ function getActiveQuitRecord() {
     .catch(err => {
       console.warn('[API] 获取远端记录失败:', err.message)
       return null
+    })
+}
+
+/**
+ * 获取历史戒烟记录列表
+ * @returns {Promise<Array>} 历史记录列表
+ */
+function getQuitRecordHistory() {
+  return request('/api/quit-record/history', { silent: true })
+    .then(res => res && res.records || [])
+    .catch(err => {
+      console.warn('[API] 获取历史记录失败:', err.message)
+      return []
     })
 }
 
@@ -365,6 +394,30 @@ function createCraving(trigger, intensity, method) {
   })
 }
 
+/**
+ * 获取烟瘾历史记录
+ * @returns {Promise<Array>} 烟瘾历史列表
+ */
+function getCravingHistory() {
+  return request('/api/craving/history', { silent: true })
+    .then(res => res && res.cravings || [])
+    .catch(err => {
+      console.warn('[API] 获取烟瘾历史失败:', err.message)
+      return []
+    })
+}
+
+/**
+ * 删除烟瘾记录
+ * @param {number} id 记录ID
+ * @returns {Promise<object>}
+ */
+function deleteCraving(id) {
+  return request('/api/craving/' + id, {
+    method: 'DELETE'
+  })
+}
+
 // ========== 数据同步 ==========
 
 /**
@@ -433,9 +486,11 @@ module.exports = {
   // 用户
   login,
   getProfile,
+  updateProfile,
   // 戒烟记录
   createQuitRecord,
   getActiveQuitRecord,
+  getQuitRecordHistory,
   // 仪表盘
   getDashboard,
   // 健康时间线
@@ -445,6 +500,8 @@ module.exports = {
   getCheckInHistory,
   // 烟瘾记录
   createCraving,
+  getCravingHistory,
+  deleteCraving,
   // 同步
   syncAllToServer,
   pullFromServer

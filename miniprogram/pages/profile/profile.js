@@ -3,8 +3,9 @@ const calc = require('../../utils/calculator')
 const storage = require('../../utils/storage')
 const api = require('../../utils/api')
 const achievements = require('../../utils/achievements')
+const theme = require('../../utils/theme')
 
-Page({
+Page(theme.mixin({
   data: {
     hasActiveRecord: false,
     // 吸烟参数
@@ -14,16 +15,12 @@ Page({
     yearsSmoked: 5,
     // 戒烟理由
     reason: '',
-    // 提醒设置
-    reminderEnabled: false,
-    reminderTime: '09:00',
     // 戒烟信息
+    currentTime: '',
     quitDate: '',
     daysQuit: 0,
     // 显示开始戒烟表单
     showStartForm: false,
-    // 订阅消息模板ID（需在微信公众平台申请）
-    subscribeTemplateId: '',
     // 用户信息
     avatarUrl: '',
     nickName: '',
@@ -31,7 +28,10 @@ Page({
     achievementList: [],   // 带 unlocked 状态的完整列表
     unlockedCount: 0,      // 已解锁数量
     newAchievement: null,  // 新解锁的成就（用于弹窗）
-    showAchievementPopup: false
+    showAchievementPopup: false,
+    // 主题
+    themeMode: 'auto',
+    themeLabel: '跟随系统'
   },
 
   onLoad(options) {
@@ -92,6 +92,33 @@ Page({
 
     // 计算成就
     this._refreshAchievements()
+
+    // 加载主题设置
+    this._loadTheme()
+  },
+
+  _loadTheme() {
+    const mode = theme.getMode()
+    this.setData({
+      themeMode: mode,
+      themeLabel: theme.getThemeLabel(mode)
+    })
+  },
+
+  onThemeChange() {
+    const modes = ['auto', 'light', 'dark']
+    const labels = ['跟随系统', '浅色', '深色']
+    wx.showActionSheet({
+      itemList: labels,
+      success: (res) => {
+        const mode = modes[res.tapIndex]
+        theme.setMode(mode)
+        this.setData({
+          themeMode: mode,
+          themeLabel: labels[res.tapIndex]
+        })
+      }
+    })
   },
 
   /**
@@ -124,8 +151,6 @@ Page({
   onNicknameInput(e) {
     const name = e.detail.value
     if (name === undefined || name === null) return
-    // 空字符串不允许清空昵称（防止误操作）
-    if (!name) return
 
     this.setData({ nickName: name })
 
@@ -143,11 +168,11 @@ Page({
 
   /**
    * 同步用户信息到后端
-   * 调用 login 接口，后端会 COALESCE 更新 nickname 和 avatar_url
+   * 使用 PUT /api/user/profile 直接更新
    */
   _syncUserInfoToServer() {
     const { nickName, avatarUrl } = this.data
-    api.login(undefined, nickName, avatarUrl).catch(err => {
+    api.updateProfile(nickName, avatarUrl).catch(err => {
       console.warn('[Profile] 同步用户信息到后端失败:', err.message)
     })
   },
@@ -257,12 +282,10 @@ Page({
 
   // 开始戒烟
   onStartQuit() {
-    this.setData({ showStartForm: true })
-  },
-
-  // 日期选择
-  onDateChange(e) {
-    this.setData({ quitDate: e.detail.value })
+    const now = new Date()
+    const pad = n => String(n).padStart(2, '0')
+    const currentTime = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`
+    this.setData({ showStartForm: true, currentTime })
   },
 
   // 参数修改
@@ -486,16 +509,16 @@ Page({
 
   // 确认开始戒烟
   async onConfirmStart() {
-    const quitDate = this.data.quitDate || new Date().toISOString().split('T')[0]
+    const now = Date.now()
 
     const record = {
-      quitDate: new Date(quitDate).getTime(),
+      quitDate: now,
       cigarettesPerDay: this.data.cigarettesPerDay,
       pricePerPack: this.data.pricePerPack,
       cigarettesPerPack: this.data.cigarettesPerPack,
       yearsSmoked: this.data.yearsSmoked,
       reason: this.data.reason,
-      createdAt: Date.now()
+      createdAt: now
     }
 
     // 保存到本地存储
@@ -583,4 +606,4 @@ Page({
       path: '/pages/index/index'
     }
   }
-})
+}))

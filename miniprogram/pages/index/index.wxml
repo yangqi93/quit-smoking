@@ -1,5 +1,6 @@
 <!-- pages/index/index.wxml -->
-<view class="container">
+<view class="root {{themeClass}}">
+<view class="container {{pageVisible ? 'page-visible' : ''}}">
 
   <!-- 未开始戒烟 -->
   <view wx:if="{{!hasActiveRecord}}" class="empty-state">
@@ -12,24 +13,23 @@
   <!-- 已开始戒烟 -->
   <view wx:if="{{hasActiveRecord}}" class="dashboard">
 
-    <!-- 计时器 -->
+    <!-- 计时器环形进度 -->
     <view class="card timer-card">
       <view class="encouragement">{{nickName ? nickName + '，' : ''}}{{encouragement}}</view>
-      <view class="timer-display">
-        <view class="timer-item">
-          <text class="big-number">{{days}}</text>
-          <text class="big-number-unit">天</text>
+      <view class="progress-ring-container">
+        <view class="progress-ring" style="--progress: {{yearProgress}}deg;">
+          <view class="progress-ring-inner">
+            <text class="ring-big-number">{{days}}</text>
+            <text class="ring-unit">天</text>
+          </view>
         </view>
-        <view class="timer-item">
-          <text class="big-number">{{hours % 24}}</text>
-          <text class="big-number-unit">时</text>
-        </view>
-        <view class="timer-item">
-          <text class="big-number">{{minutes % 60}}</text>
-          <text class="big-number-unit">分</text>
-        </view>
+        <view class="progress-ring-glow" style="--progress: {{yearProgress}}deg;"></view>
       </view>
-      <view class="timer-label">已坚持戒烟</view>
+      <view class="timer-sub-detail">
+        <text class="sub-detail-text">{{hours % 24}} 时 {{minutes % 60}} 分</text>
+        <text class="sub-detail-divider">·</text>
+        <text class="sub-detail-text">年度目标 {{yearPercent}}%</text>
+      </view>
     </view>
 
     <!-- 统计双卡 -->
@@ -79,4 +79,5 @@
     </view>
 
   </view>
+</view>
 </view>
