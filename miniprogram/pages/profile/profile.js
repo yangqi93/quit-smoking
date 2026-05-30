@@ -115,6 +115,8 @@ Page({
   onNicknameInput(e) {
     const name = e.detail.value
     if (name === undefined || name === null) return
+    // 空字符串不允许清空昵称（防止误操作）
+    if (!name) return
 
     this.setData({ nickName: name })
 
@@ -147,7 +149,7 @@ Page({
    */
   async _fetchProfileFromServer() {
     try {
-      const res = await api.getProfile()
+      const res = await api.getProfile({ silent: true })
       if (res && res.user) {
         const serverAvatar = res.user.avatar_url || ''
         const serverNick = res.user.nickname || ''

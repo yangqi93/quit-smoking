@@ -8,8 +8,8 @@ const storage = require('../utils/storage')
 
 describe('getBaseUrl', () => {
   test('默认使用 development 环境配置', () => {
-    // 测试环境 fallback 到 development，地址为 localhost:8080
-    expect(api.getBaseUrl()).toBe('http://localhost:8080')
+    // 测试环境 fallback 到 development，地址为 api.yangqi.space/quit-smoking
+    expect(api.getBaseUrl()).toBe('https://api.yangqi.space/quit-smoking')
   })
 })
 
@@ -61,7 +61,7 @@ describe('request - 通用请求封装', () => {
     await api.request('/api/test')
 
     const callArgs = wx.request.mock.calls[0][0]
-    expect(callArgs.url).toBe('http://localhost:8080/api/test')
+    expect(callArgs.url).toBe('https://api.yangqi.space/quit-smoking/api/test')
   })
 
   test('默认 GET 方法', async () => {

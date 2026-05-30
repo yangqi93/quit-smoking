@@ -120,10 +120,11 @@ function login(openId, nickname, avatarUrl) {
 
 /**
  * 获取用户资料
+ * @param {object} [options] 请求选项（如 { silent: true } 不显示 loading）
  * @returns {Promise<object>} 用户资料
  */
-function getProfile() {
-  return request('/api/user/profile', { silent: true })
+function getProfile(options) {
+  return request('/api/user/profile', options)
 }
 
 // ========== 戒烟记录接口 ==========

@@ -40,7 +40,7 @@ App({
 
       // 2. 从服务端拉取用户资料（恢复头像昵称）
       try {
-        const profileRes = await api.getProfile()
+        const profileRes = await api.getProfile({ silent: true })
         if (profileRes && profileRes.user) {
           const serverAvatar = profileRes.user.avatar_url || ''
           const serverNick = profileRes.user.nickname || ''
