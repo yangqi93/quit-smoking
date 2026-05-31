@@ -167,13 +167,23 @@ Page(theme.mixin({
     })
   },
 
-  // 分享
+  // 分享给好友
   onShareAppMessage() {
     const record = storage.getQuitRecord()
     const days = record ? calc.calcQuitDuration(record.quitDate).days : 0
     return {
       title: `我已经戒烟${days}天了，一起来吧！`,
       path: '/pages/index/index'
+    }
+  },
+
+  // 分享到朋友圈
+  onShareTimeline() {
+    const record = storage.getQuitRecord()
+    const days = record ? calc.calcQuitDuration(record.quitDate).days : 0
+    return {
+      title: `我已戒烟${days}天，说戒就戒！`,
+      query: ''
     }
   }
 }))

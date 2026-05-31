@@ -102,13 +102,23 @@ Page(theme.mixin({
     }
   },
 
-  // 分享
+  // 分享给好友
   onShareAppMessage() {
     const record = storage.getQuitRecord()
     const days = record ? calc.calcQuitDuration(record.quitDate).days : 0
     return {
       title: `我戒烟${days}天了，身体正在恢复中！`,
       path: '/pages/health/health'
+    }
+  },
+
+  // 分享到朋友圈
+  onShareTimeline() {
+    const record = storage.getQuitRecord()
+    const days = record ? calc.calcQuitDuration(record.quitDate).days : 0
+    return {
+      title: `戒烟${days}天，身体变化太大了！`,
+      query: ''
     }
   }
 }))

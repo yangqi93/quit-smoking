@@ -130,6 +130,8 @@ function mixin(pageDef) {
       themeClass: getCurrentClass() || '',
       pageVisible: true  // 首次加载播放入场过渡
     })
+    // 启用分享菜单（好友 + 朋友圈）
+    try { wx.showShareMenu({ menus: ['shareAppMessage', 'shareTimeline'] }) } catch (_) {}
     if (origOnLoad) origOnLoad.call(this, options)
   }
 

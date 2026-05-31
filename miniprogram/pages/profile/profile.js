@@ -599,11 +599,19 @@ Page(theme.mixin({
     }
   },
 
-  // 分享
+  // 分享给好友
   onShareAppMessage() {
     return {
       title: '戒烟助手 - 帮你记录每一天的变化',
       path: '/pages/index/index'
+    }
+  },
+
+  // 分享到朋友圈
+  onShareTimeline() {
+    return {
+      title: '说戒就戒 — 和我一起开始戒烟吧！',
+      query: ''
     }
   }
 }))

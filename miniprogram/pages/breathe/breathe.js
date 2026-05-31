@@ -160,11 +160,19 @@ Page(theme.mixin({
     if (this._timer) clearInterval(this._timer)
   },
 
-  // 分享
+  // 分享给好友
   onShareAppMessage() {
     return {
       title: '4-7-8呼吸法帮我度过了烟瘾！',
       path: '/pages/breathe/breathe'
+    }
+  },
+
+  // 分享到朋友圈
+  onShareTimeline() {
+    return {
+      title: '深呼吸，熬过烟瘾其实没那么难',
+      query: ''
     }
   }
 }))
